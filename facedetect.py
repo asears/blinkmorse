@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 import argparse
 import base64
-
+from playsound import playsound
 
 from PIL import Image
 from PIL import ImageDraw
@@ -11,6 +11,7 @@ face_cascade = cv2.CascadeClassifier('classifiers/haar-face.xml')
 eye_cascade = cv2.CascadeClassifier('classifiers/haar-eyes.xml')
 
 cap = cv2.VideoCapture(0)
+i = 0
 
 while(True):
     # Capture frame-by-frame
@@ -26,7 +27,15 @@ while(True):
         roi_gray = gray[y:y+h, x:x+w]
         roi_color = img[y:y+h, x:x+w]
         eyes = eye_cascade.detectMultiScale(roi_gray)
+        print eyes
+        print "eyes not detected or closed"
         for (ex,ey,ew,eh) in eyes:
+            print "eyes detected"
+            # determine how to calculate when a long closed eye occurs vs loss of eye detection
+            i = i + 1
+            if (i == 10):
+                p = playsound("sounds/yes-5.wav")
+                i = 0    
             cv2.rectangle(roi_color,(ex,ey),(ex+ew,ey+eh),(0,255,0),2)
 
     # Display the resulting frame
